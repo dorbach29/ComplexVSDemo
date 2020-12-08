@@ -8,13 +8,44 @@ public class Matrix {
     
     public static void main(String[] args){
         float[][][] m1 = getMatrix();
-        float[][][] m2 = getMatrix();
-        printMatrix(mulMatMat(m1, m2));
+        float[][][] m2 = adjMat(m1);
+        printMatrix(m2);
     } 
+
+
+    /*  LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC */
+    /*  LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC */
     /*  LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC */
 
 
+    //Returns Adjoint of a matrix
+    static float[][][] adjMat(float[][][] m1){
+        return conjMat(tposeMat(m1)); 
+    }
 
+
+    //Returns the transpose of a matrix
+    static float[][][] tposeMat(float[][][] m1){
+        float[][][] transpose = new float[m1[0].length][m1.length][]; 
+        for(int i = 0; i < transpose.length ; i ++){
+            for(int j = 0; j < transpose[i].length; j ++){
+                transpose[i][j] = m1[j][i];
+            }
+        }
+        return transpose; 
+    }
+
+
+    //Is java pass by reference or not lets find out
+    static float[][][] conjMat(float[][][] m1){
+        float[][][] matrix = new float[m1.length][m1[0].length][];
+        for(int i = 0; i < m1.length; i ++){
+            for(int j = 0; j < m1[i].length ; j ++){
+                matrix[i][j] = conjCom(m1[i][j]);
+            }
+        }
+        return matrix; 
+    }
  
  
     //To keep in touch with the MathNotation this is the equivalent of doing a matrix multiplication with m1 on the left and m2 on the right
@@ -27,7 +58,9 @@ public class Matrix {
         return matrix; 
     }
 
+    //Transforms a vector by the properties defined in the given matrix
     static float[][] mulMatVec(float[][][] mat, float[][] vec){
+        //Mult each entry in Mat by coresponding entry in Vec, then sum them
         float[][][] newMat = new float[mat.length][mat[0].length][]; 
         for(int i = 0 ; i < vec.length; i++){
             for(int j = 0; j < mat[0].length ; j++){
@@ -52,6 +85,7 @@ public class Matrix {
         return vector; 
     }
 
+    //Sums all the numbers in a vector and returns the cmplx nmbr
     static float[] sumVec(float[][] vector){
         float[] c = new float[]{0, 0};
         for(int i = 0; i < vector.length; i ++ ){
@@ -90,29 +124,39 @@ public class Matrix {
 
 
     /* INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT  INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT   */
+    /* INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT  INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT   */
+    /* INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT  INPUT INPUT INPUT INPUT INPUT INPUT INPUT INPUT   */
+
 
     static float[][][] getMatrix(){
         Scanner dog = new Scanner(System.in);
+        boolean good = false;
+        float[][][] returnMatrix = new float[0][][]; 
+        while(!good){
+        //Reinitializing working Matrix
         System.out.println("How many vectors will be in this matrix?");
         int vectors = dog.nextInt();
         System.out.println("What will be the length of each vector?");
         int length = dog.nextInt(); 
         float[][][] matrix = new float[vectors][][];
 
-        boolean good = false;
-        while(!good){
+        //Getting Matrix From user
         for(int i = 0; i < vectors; i ++){
             System.out.print("For Vector " + i + "  ");
             matrix[i] = getVector(length); 
         }
-        
+
+        //Checking to make sure the Matrix is good
         System.out.println("This is your Matrix: ");
         printMatrix(matrix);
-        System.out.println("Is this good? (y- 1/n- 0)");
-        int response = dog.nextInt();
-        if(response == 1) good = true; 
+        System.out.println("Is this good? (y/n)");
+        String response = dog.next();
+        if(response.charAt(0) == 'y' ) good = true;
+
+        //Setting returnMatrix to point to working matrix
+        returnMatrix = matrix;  
         }
-        return matrix; 
+        return returnMatrix; 
     }
 
     static float[][][] getMatrix(int vectors, int length){
@@ -157,6 +201,8 @@ public class Matrix {
     
 
     /* OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT*/
+    /* OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT*/
+    /* OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT OUTPUT*/
 
     //Note that we print each array in the matrix vertically as opposed to horizontally
     //This is how they are represented in Mathematics and this program attempts to emulate that as well as the math logic and reasoning behind
@@ -172,13 +218,13 @@ public class Matrix {
 
     static void printComp(float[] comp){
         if(comp[1] < 0){
-            if(comp[0] < 1)
+            if(comp[0] < 0)
             System.out.print("["+comp[0] + " " + comp[1] + "i]  ");
             else 
             System.out.print("[ "+comp[0] + " " + comp[1] + "i]  ");
         }
         else{
-            if(comp[0] < 1)
+            if(comp[0] < 0)
                 System.out.print("["+comp[0] + " +" + comp[1] +"i]  ");
             else
                 System.out.print("[ "+comp[0] + " +" + comp[1] +"i]  ");
