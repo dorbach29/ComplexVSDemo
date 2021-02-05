@@ -1,21 +1,78 @@
 import java.util.Scanner;
 
 //As a matrix has it's respective vectors (or sub-arrays) listed out one next to the other (not one ontop of the other)
-//This program prints out the sub arrays of a matrix
+//This program prints out the sub arrays of a matrix side by side.
 
 public class Matrix {
 
     
     public static void main(String[] args){
         float[][][] m1 = getMatrix();
-        float[][][] m2 = adjMat(m1);
-        printMatrix(m2);
+        printComp(determMat(m1));
     } 
 
 
     /*  LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC */
     /*  LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC */
     /*  LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC LOGIC */
+
+
+    //Determinant of any matrix as long as it is square!!!
+    //Recusrively goes through and finds the matrix
+    static float[] determMat(float [][][] m1){
+        if(m1.length == 2 && m1[0].length == 2){
+            return determ2x2Mat(m1);
+        } else if(m1.length == m1[0].length){
+            float[] determinant = new float[]{0 ,0 };
+            for(int i = 0; i < m1.length ; i ++){
+               
+                //The Coefficent by which we will multiply the determinant
+                float[] coefficent = m1[i][0];
+
+
+                //Getting the Matrix that is composed of everything but the row and collumn which our coefficent is in 
+                float[][][] subMat = new float[m1.length - 1][m1[0].length - 1][];
+                int newVecIndex = 0; 
+                for(int orgVecIndex = 0; orgVecIndex < m1.length; orgVecIndex ++ ){
+                    //Skips the Column if nessecary
+                    if(orgVecIndex == i) {
+                        orgVecIndex ++;
+                    }
+
+                    //Automatically skips the first row everytime
+                    if(orgVecIndex < m1.length){
+                        for(int orgComIndex = 1; orgComIndex < m1[0].length; orgComIndex ++){
+                            subMat[newVecIndex][orgComIndex - 1] = m1[orgVecIndex][orgComIndex]; 
+                        }
+                    }
+
+                    newVecIndex ++; 
+                }
+                float[] subDeterminant = determMat(subMat);
+                subDeterminant = mulCom(coefficent, subDeterminant);
+                
+                //Adding or Subtracting to accumulate actual Determinant
+                if(i % 2 == 0){
+                    determinant = addCom(determinant, subDeterminant);
+                } else {
+                    determinant = subCom(determinant, subDeterminant);
+                }
+            }
+
+            return determinant;
+        } else {
+            System.out.println("determMat(): WARNING! Input must be a square Matirx");
+            return new float[]{0, 0};
+        }
+    }
+
+    //Determinant of 2x2 Matrix 
+    static float[] determ2x2Mat(float[][][] m1){
+        float[] ad = mulCom(m1[0][0] , m1[1][1]);
+        float[] bc = mulCom(m1[1][0], m1[0][1]);
+        return subCom(ad, bc);
+
+    }
 
 
     //Returns Adjoint of a matrix
@@ -48,7 +105,9 @@ public class Matrix {
     }
  
  
+    //Multiply Two Matrixes
     //To keep in touch with the MathNotation this is the equivalent of doing a matrix multiplication with m1 on the left and m2 on the right
+    //
     static float[][][] mulMatMat(float[][][] m1, float[][][] m2){
         float[][][] matrix = new float[m2.length][][]; 
         for(int vec = 0 ; vec < m2.length; vec ++){
@@ -70,6 +129,7 @@ public class Matrix {
         return sumMat(newMat);
     } 
 
+    //Compresses a Matrix
     //Sums all the vectors in one matrix into one single vector 
     static float[][] sumMat(float[][][] mat){
         float[][] vector = new float[mat[0].length][];
@@ -98,6 +158,11 @@ public class Matrix {
     //add c1 and c2
     static float[] addCom(float[] c1, float[] c2){
         return new float[]{c1[0] + c2[0], c1[1] + c2[1]}; 
+    }
+
+    //Subtract c2 from c1
+    static float[] subCom(float[] c1, float[] c2){
+        return new float[]{c1[0] - c2[0], c1[1] - c2[1]}; 
     }
 
     //multiply c1 by c2
